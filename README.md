@@ -13,3 +13,7 @@ recorde_voice
 camera
 
 time
+
+stt
+
+tts
