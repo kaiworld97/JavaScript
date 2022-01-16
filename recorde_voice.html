@@ -1,0 +1,53 @@
+<html>
+  <head>
+    
+  </head>
+  <p>
+    <button type="button" id="record">Record</button>
+    <button type="button" id="stopRecord" disabled>Stop</button>
+  </p>
+  <p>
+    <audio id=recordedAudio></audio>        
+  </p>
+
+  <script> 
+    navigator.mediaDevices.getUserMedia({audio:true})
+    .then(stream => {handlerFunction(stream)})
+
+    function handlerFunction(stream) {
+      rec = new MediaRecorder(stream);
+      rec.ondataavailable = e => {
+        audioChunks.push(e.data);
+        if (rec.state == "inactive"){
+          let blob = new Blob(audioChunks,{type:'audio/wav'});
+        //   오디오 파일 만들기
+          const file = new File([blob], 'voice.wav', blob)
+        //   오디오 파일 다운 받기
+        //   const a = document.createElement("a")
+        //   a.href = URL.createObjectURL(blob);
+        //   a.download = `hi.wav`
+        //   a.click()
+        //   a.remove()
+
+        //  오디오 재생기 만들기
+        //   recordedAudio.src = URL.createObjectURL(blob);
+        //   recordedAudio.controls=true;
+        //   recordedAudio.autoplay=false;
+          
+          }
+        }
+      }
+
+      record.onclick = e => {
+        record.disabled = true;
+        stopRecord.disabled=false;
+        audioChunks = [];
+        rec.start();
+        }
+      stopRecord.onclick = e => {
+        record.disabled = false;
+        stop.disabled=true;
+        rec.stop();
+        }
+  </script>
+</html>
