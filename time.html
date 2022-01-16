@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="js-clock">hi</div>
+    <script>
+const clockTitle = document.querySelector(".js-clock");
+
+function getEve() {
+  const eve = new Date("2022-12-25T00:00:00");
+  const date = new Date();
+  const time = (eve.getTime() - date.getTime()) / 1000;
+  const day = Math.floor(time / 60 / 60 / 24);
+  const hour = Math.floor(time / 60 / 60) % 24;
+  const minute = Math.floor(time / 60) % 60;
+  const second = Math.floor(time) % 60;
+  const days = String(day).padStart(2, "0");
+  const hours = String(hour).padStart(2, "0");
+  const minutes = String(minute).padStart(2, "0");
+  const seconds = String(second).padStart(2, "0");
+  clockTitle.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  console.log(date.getTime())
+}
+
+getEve();
+setInterval(getEve, 1000);
+
+            
+    </script>
+</body>
+</html>
