@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+</head>
+<body>
+    <div class="camera">
+        <video id="video">Video stream not available.</video>
+        <button id="startbutton">Take photo</button>
+      </div>
+      <canvas id="canvas" >
+    </canvas>
+    <div class="output">
+      <img id="photo" alt="The screen capture will appear in this box.">
+    </div>
+<button id="cameraon" >카메라</button>
+<button id="copyimg" onclick="copyimg()">복사</button>
+<button id="cameraoff">끄기</button>
+    <script>
+(function() {
+  var width = 600;    
+  var height = 0;    
+  var streaming = false;
+
+  var video = null;
+  var canvas = null;
+  var photo = null;
+  var startbutton = null;
+
+  
+  function startup() {
+    video = document.getElementById('video');
+    canvas = document.getElementById('canvas');
+    photo = document.getElementById('photo');
+    startbutton = document.getElementById('startbutton');
+
+    navigator.mediaDevices.getUserMedia({video: true, audio: false})
+    .then(function(stream) {
+      video.srcObject = stream;
+      video.play();
+      document.getElementById('cameraoff').addEventListener('click', function () {
+            stopStream(stream);
+        });
+    })
+    .catch(function(err) {
+      console.log("An error occurred: " + err);
+    });
+
+    video.addEventListener('canplay', function(ev){
+      if (!streaming) {
+        height = video.videoHeight / (video.videoWidth/width);
+      
+
+        if (isNaN(height)) {
+          height = width / (4/3);
+        }
+      
+        video.setAttribute('width', width);
+        video.setAttribute('height', height);
+        canvas.setAttribute('width', width);
+        canvas.setAttribute('height', height);
+        streaming = true;
+      }
+    }, false);
+
+    startbutton.addEventListener('click', function(ev){
+      takepicture();
+      ev.preventDefault();
+    }, false);
+    
+    clearphoto();
+  }
+
+
+  function stopStream(stream) {
+  console.log('stop called');
+  stream.getVideoTracks().forEach(function (track) {
+      track.stop();
+  });}
+  // function cameraoff() {
+  //   video.pause();
+  //   video.currentTime = 0;
+  // }
+
+  function clearphoto() {
+    var context = canvas.getContext('2d');
+    context.fillStyle = "#AAA";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    var data = canvas.toDataURL('image/png');
+    photo.setAttribute('src', data);
+  }
+  
+  function takepicture() {
+    var context = canvas.getContext('2d');
+    if (width && height) {
+      canvas.width = width;
+      canvas.height = height;
+      context.drawImage(video, 0, 0, width, height);
+    
+      var data = canvas.toDataURL('image/jpeg');
+      photo.setAttribute('src', data); 
+    } else {
+      clearphoto();
+    }
+  }
+
+  document.getElementById('cameraon').addEventListener('click', startup, false);
+  // document.getElementById('cameraoff').addEventListener('click', cameraoff, false);
+})();
+
+function copyimg(){
+  html2canvas($("#photo")[0]).then(function(canvas){
+  canvas.toBlob(function(blob) { 
+      const item = new ClipboardItem({ "image/png": blob });
+      navigator.clipboard.write([item]); 
+      });
+  });
+}
+  $("#copyimg").on('click', function(e) {
+  html2canvas($("#canvas")[0]).then(function(canvas) {
+  document.body.appendChild(canvas)
+  });
+  html2canvas($("#canvas")[0]).then(function(canvas) {
+  $('body').append('<img src="' + canvas.toDataURL("image/jpeg") + '"/>');
+  });
+});
+  
+
+    </script>
+</body>
+</html>
