@@ -17,3 +17,7 @@ time
 stt
 
 tts
+
+paint
+
+input_tags
