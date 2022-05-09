@@ -21,3 +21,5 @@ tts
 paint
 
 input_tags
+
+dateformat yyyy-mm-dd
